@@ -1,0 +1,141 @@
+** DON'T FORGET TO RUN WEBPACK WHEN YOU ADD SOMETHING NEW TO IT (npm run build)
+
+//fundamentals
+
+output: publicpath 
+
+It allows you to specify the base path for all the assets within your application.ry po
+
+// sass
+
+to use sass you must npm install sass loader, and node-sass
+
+in webpack.config, to use sass you must set a rule that looks for scss using test and specify
+loader as 'style-loader', 'css-loader', 'sass-loader' in that order
+
+
+//bable loader
+
+in order to use babel-loader you must use @babel/env as a preset which changes ecma 6 and above to 
+ecma 5 which is compatible with all loaders
+
+you also much npm install @babel/core babel-loader @babel/preset-env
+
+if you want to have access to class properties you should also npm install babel-plugin-transform-class-properties
+
+babel team has deprecated stage-0 as a plugin (this was a bundle of most used plugins) the team
+now recommends that people expliclity write what plugins they want to use
+
+// plugins
+
+plugins add additional functionality to webpack itself
+
+uglifyjs is a minifier that makes bundle.js smaller, to use it you need to npm install uglifyjs.webpack.plugin
+require it in the webpack and put it in the plugins at the bottom which and invoke it
+
+// extract all css files into seprate files (outside of bundle.js)
+
+this will make our bundlejs smaller to download and allow parallel loads which is more efficient on the 
+browser
+
+to do this you need to add another plugin: miniCssExtractPlugin({
+    filename: 'styles.css'
+})
+
+then replace style-loader with miniCssExtractPlugin.loader (dont' forget to import and npm install it)
+
+
+// caching
+
+caching stuff like bundle.js so that if there are not changes to the bundle the user would use the bundle.js 
+stored in cache instead of downloading a new bundle.js is easy. Add [contenthash] to bundle.js (bundle.[contenthash].js)
+and it is done
+
+//problem 1
+
+the problem this generates is that everytime code is changed, a new bundle[hash] is created and stored in the folder 
+which can clutter things up
+
+// solution
+to solve this use the plugin (which requires import and npm install) cleanWebpackPlugin(['your directory'])
+this plguin can strangely be used to also delete folders (very destructive if misconfigured)
+
+// problem 2
+
+another problem is that without changing the name of what is referenced in index.js, the bundle
+will not be found (breaking the app) because the newly created bundle has a bunch of hash after it.
+
+// solution 
+
+use htmlwebpackplugin and change the output in webpack config to reference dist (or whereever your
+hashed bundles and css are) this is so that the created index.html in dist will have the right 
+references for bundle and extracted css
+
+you need to change the output so that publicpath is '' and path only uses 'dist' and not './dist'
+
+// problem 3
+
+this process generates a boilerplate html which needs to be customized
+
+// solution
+
+pass the parameters into htmlwebpackplugin to change elements in html 
+
+        new HtmlWebpackPlugin({
+            title: 'Hello World',
+            filename: 'subfolder/custom_file.html',
+            meta: {
+                viewport: 'width-device-width initial-scale=1'    
+            }
+
+find more options in the htmlwebpackplgin website
+
+// mode 
+
+There are three options for mode, none, development and production
+
+the differences between development and production are mainly error messages and minifying source code
+in production
+
+the conventional way to doing thing is to create two webpack files, one for development and one for 
+production, in the production you can remove uglify.js because it comes with it by default, in
+development you can remove content hash because you don't need to cache anything in development
+
+this means in development you should remove miniCssExtractPlugin and replace it with style loader
+
+you will also have to make changes to package json script so that the commands call the webpacks
+coreclty
+
+
+// webpack dev server
+
+Instead of building the package everytime code changes, there is a way to see changes updated 
+automatically
+
+npm i webpack-dev-server
+
+add this to webpack dev config filename
+
+    devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),
+        index: 'index.html',
+        port: 9000
+    },
+
+content base tells it where the entry point file is without specifying the file name
+index is where you specify the file name
+port is just telling it which port number to run
+
+you will also have to change the package json file to change the dev script from
+
+"webpack --config webpack.development.config"
+
+to 
+
+"webpack-dev-server --config webpack.development.config.js --hot"
+
+
+
+
+
+
