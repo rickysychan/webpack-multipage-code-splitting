@@ -1,16 +1,26 @@
 const path = require('path')
-const miniCssExtractPlugin = require('mini-css-extract-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const cleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        'hello-world': './src/hello-world.js',
+        'kiwi': './src/kiwi.js'
+    },
     output: {
-        filename: "bundle.[contenthash]js",
+        filename: "[name].[contenthash].js",
         path: path.resolve(__dirname, 'dist'),
         publicPath: ''
     },
     mode: 'none',
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 10000,
+            automaticNameDelimiter: '_'
+        }
+    },
     module: {
         rules: [
             {
@@ -22,13 +32,13 @@ module.exports = {
             {
                 test: /\.css/,
                 use: [
-                    'style-loader', 'css-loader'
+                    MiniCssExtractPlugin.loader, 'css-loader'
                 ]
             },
             {
                 test: /\.scss/,
                 use: [
-                    'style-loader', 'css-loader', 'sass-loader'
+                    MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'
                 ]
             },
             {
@@ -45,10 +55,22 @@ module.exports = {
         ]
     },
     plugins: [
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css'
+        }),
         new cleanWebpackPlugin(['src/trash', 'dist']),
         new HtmlWebpackPlugin({
             title: 'Hello World',
-            filename: 'custom_file.html',
+            filename: 'hello-world.html',
+            chunks: ['hello-world', 'vendors~hello-world~kiwi'],
+            meta: {
+                viewport: 'width=device-width initial-scale=1'    
+            }
+        }),
+        new HtmlWebpackPlugin({
+            title: 'kiwi',
+            filename: 'kiwi.html',
+            chunks: ['kiwi', 'vendors~hello-world~kiwi'],
             meta: {
                 viewport: 'width=device-width initial-scale=1'    
             }

@@ -135,7 +135,53 @@ to
 "webpack-dev-server --config webpack.development.config.js --hot"
 
 
+// Multiple page applications
 
+For multiple page applications you need to change the entry of the webpack config file into
+and object
+
+After that change the output file name from bundle to [name] and webpack will know to use the keys
+of the entry object as the name when outputting two bundle files, this is the same for
+the miniCssExtractPlugin to create separate style bundles
+
+This will generate two bundles but what if you need to generate two or more htmls pages that
+each include specific bundles?
+
+For this you need to change the htmlwebpackplgin file name to the approiate name and create a 
+new key called chunks which specifies which bundle files to include
+
+you need to also make sure you are using the miniCssExtractPlugin and change the filename to 
+[name].[contenthash].css and replace the styleloader on the css test part to miniCssExtractPlugin.loader
+(this took me 20 minutes to figure out)
+
+
+
+// How to handle common dependices
+
+One problem with using multiple pages is that they may share common dependencies. If you install
+all of the dependences to each page than the bundle files you create will become very big because
+each file has their own version of the common dependency
+
+in order to fix this you just need to add this to the webpack, this tells webpack to smartly
+bunch all common dependences and emit a file called vendors.js which is a collection of all 
+common dependences used. 
+
+    optimization: {
+        splitChunks: {
+            chunks: "all"
+        }
+    },
+
+and on the chunks in the htmlwebpackplugin, include vendors and the name of the file that is emitted 
+in the dist folder eg. vendors~hello-world~kiwi
+
+*** this only works for common dependices above 30 kb
+
+
+// custom settings
+
+if you want to lower the minimum threshold for optimizing common dependencies you can use minSize
+in optimization
 
 
 
