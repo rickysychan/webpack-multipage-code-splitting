@@ -3,7 +3,7 @@
 Configured webpack to make two html pages and have them import specific bundle and css files genereated from webpack and also
 opptimized their size with code spliting. Only npm run build works on this version
 
-![Dev webpack](https://github.com/rickysychan/webpack-4/blob/master/pics/Screen%20Shot%202018-10-12%20at%2012.20.43%20AM.png)
+![Dev webpack](https://github.com/rickysychan/webpack-multipage-code-splitting/blob/master/pics/Screen%20Shot%202018-10-16%20at%201.22.55%20AM.png)
 
 
 ##Dependencies
